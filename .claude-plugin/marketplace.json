@@ -1,6 +1,9 @@
 {
   "name": "md-translate",
-  "owner": { "name": "hiepnm93" },
+  "description": "Markdown translation plugin for Claude Code: unit-by-unit LLM translation with protected spans and hard verify.",
+  "owner": {
+    "name": "hiepnm93"
+  },
   "plugins": [
     {
       "name": "md-translate",
