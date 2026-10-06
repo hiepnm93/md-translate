@@ -58,7 +58,7 @@ resumable; `run` chains them.
 
 1. **digest** — parse the source into units at headings ≤ `unit_heading_level`, then
    cap by `max_unit_chars` at blank lines (never inside a fenced block). Replace with
-   placeholders `⟦P12⟧`: front matter, fenced/indented code, inline code, URLs and link
+   placeholders `⟦P12⟧`: front matter, fenced code, inline code, URLs and link
    targets (link *text* stays translatable), HTML tags, `$…$`/`$$…$$` math, reference
    definitions, and lines matching `protect`. Placeholder map → `placeholders.json`.
 2. **translate** — one LLM call per unit. Prompt = base rules (`prompts/translate.md`:
