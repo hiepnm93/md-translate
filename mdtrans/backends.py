@@ -71,6 +71,33 @@ class ClaudeCLI:
         return r.stdout
 
 
+class OpenCode:
+    """`opencode run` locally. No --system-prompt flag, so system is folded into the message."""
+
+    def __init__(self, model: str | None = None):
+        self.name, self.model = "opencode", model
+
+    def complete(self, system: str, user: str) -> str:
+        cmd = ["opencode", "run", "--agent", "plan", "--format", "json", "--pure"]
+        if self.model:
+            cmd += ["--model", self.model]
+        try:
+            r = subprocess.run(cmd + [f"{system}\n\n{user}"], capture_output=True, text=True, timeout=900, check=False)
+        except subprocess.TimeoutExpired as e:
+            raise BackendError("opencode: timeout") from e
+        text = ""
+        for line in r.stdout.splitlines():  # NDJSON events; keep the assistant text parts
+            try:
+                ev = json.loads(line)
+            except ValueError:
+                continue
+            if ev.get("type") == "text":
+                text += ev.get("part", {}).get("text", "")
+        if r.returncode != 0 or not text.strip():
+            raise BackendError(f"opencode: exit {r.returncode}: {(r.stderr or r.stdout)[:300]}")
+        return text
+
+
 def _ssh_hosts() -> list[tuple[str, str | None]]:
     out = []
     for item in filter(None, (s.strip() for s in os.environ.get("MDTRANS_SSH_HOSTS", "").split(","))):
@@ -104,6 +131,8 @@ def probe() -> list[dict]:
     if base.rstrip("/") != local:
         found.append({"spec": f"openai:{local}", "model": "local", "ok": _http_ok(local + "/models"),
                       "detail": "llama-server"})
+    found.append({"spec": "opencode", "model": os.environ.get("MDTRANS_MODEL"),
+                  "ok": bool(shutil.which("opencode")), "detail": "local opencode run (cheap models)"})
     found.append({"spec": "claude-cli", "model": os.environ.get("MDTRANS_MODEL"),
                   "ok": bool(shutil.which("claude")), "detail": "local claude -p"})
     return found
@@ -115,10 +144,12 @@ def make(spec: str, model: str | None = None):
         return ClaudeCLI(model, host=target)
     if kind == "claude-cli":
         return ClaudeCLI(model or os.environ.get("MDTRANS_MODEL"))
+    if kind == "opencode":
+        return OpenCode(model or os.environ.get("MDTRANS_MODEL"))
     if kind == "openai":
         base = target or os.environ.get("MDTRANS_BASE_URL") or ""
         m = model or os.environ.get("MDTRANS_MODEL") or "local"
         if not base:
             raise BackendError("openai backend needs MDTRANS_BASE_URL or openai:<url>")
         return OpenAI(base, m, os.environ.get("MDTRANS_API_KEY", ""))
-    raise BackendError(f"unknown backend {spec!r} (use ssh:<host>, openai[:<url>], claude-cli)")
+    raise BackendError(f"unknown backend {spec!r} (use ssh:<host>, openai[:<url>], opencode, claude-cli)")
