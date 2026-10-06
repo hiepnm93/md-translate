@@ -1,0 +1,7 @@
+{
+  "成本": { "vi": "Chi phí", "note": "field label" },
+  "说人话": { "vi": "Nói dễ hiểu", "note": "field label" },
+  "收益": { "vi": "Lợi ích", "note": "field label" },
+  "证据等级": { "vi": "Mức bằng chứng", "note": "field label" },
+  "备注": { "vi": "Ghi chú", "note": "field label" }
+}

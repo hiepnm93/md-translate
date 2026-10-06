@@ -67,3 +67,10 @@ class SplitTest(unittest.TestCase):
         self.assertGreater(len(units), 3)
         for u in units:
             self.assertLessEqual(len(u), 120)
+
+
+class LiteralTokenTest(unittest.TestCase):
+    def test_source_with_placeholder_like_text(self):
+        doc = "Use `⟦P12⟧` tokens; bare ⟦P3⟧ and ⟦P1⟧ ⟦P1⟧ too.\n" + "".join(f"- [l{i}](u{i})\n" for i in range(20))
+        text, mapping = protect(doc, [])
+        self.assertEqual(restore(text, mapping), doc)

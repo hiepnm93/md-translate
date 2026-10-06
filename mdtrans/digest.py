@@ -8,6 +8,7 @@ from pathlib import Path
 from mdtrans.config import Config, workdir_for
 from mdtrans.protect import protect
 
+FORMAT = 2  # bump when protect/split output changes, so stale workdirs are rebuilt
 _HEADING = re.compile(r"^(#{1,6})[ \t]")
 _PARA = re.compile(r"(?<=\n\n)")
 
@@ -52,7 +53,7 @@ def out_file(src_unit: Path) -> Path:
 def digest_file(cfg: Config, src: Path, lang: str) -> Path:
     """Write units + placeholder map; keep existing outputs while source and split settings match."""
     text = src.read_text(encoding="utf-8")
-    key = json.dumps([text, cfg.protect, cfg.unit_heading_level, cfg.max_unit_chars])
+    key = json.dumps([FORMAT, text, cfg.protect, cfg.unit_heading_level, cfg.max_unit_chars])
     digest = hashlib.sha256(key.encode()).hexdigest()
     wd = workdir_for(cfg, src, lang)
     meta = wd / "meta.json"

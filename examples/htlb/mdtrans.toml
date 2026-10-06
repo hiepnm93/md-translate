@@ -1,0 +1,14 @@
+# HowToLiveBetter-style book: Chinese master chapters → Vietnamese overlay.
+source_lang = "zh"
+targets = ["vi"]
+files = ["book/*.md"]
+out = "book/{lang}/{name}"
+glossary = "glossary.json"
+rules = "rules/{lang}.md"
+unit_heading_level = 3            # one unit per ### advice item
+protect = [
+  '^- 来源：.*$',                  # source citations stay byte-identical
+  '^<!-- 成本标签.*$',             # cost-tag comments
+]
+banned = { vi = ['\bđược tiến hành\b', '\bnhằm mục đích\b'] }
+concurrency = 3

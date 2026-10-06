@@ -1,0 +1,11 @@
+{
+  "name": "md-translate",
+  "owner": { "name": "hiepnm93" },
+  "plugins": [
+    {
+      "name": "md-translate",
+      "source": "./",
+      "description": "Translate Markdown unit-by-unit with an LLM: protected spans, glossary, hard verify, repair."
+    }
+  ]
+}

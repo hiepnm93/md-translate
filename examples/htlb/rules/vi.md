@@ -1,0 +1,4 @@
+- Field labels stay Markdown list lines: `- Chi phí:`, never bold.
+- "Nói dễ hiểu" must pass the neighbor test: a reader without training understands it.
+- No HR/RR/OR/CI in "Nói dễ hiểu".
+- Prefer plain verbs: "làm" over "được tiến hành", "để" over "nhằm mục đích".

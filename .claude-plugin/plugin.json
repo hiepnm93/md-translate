@@ -1,0 +1,8 @@
+{
+  "name": "md-translate",
+  "version": "0.1.0",
+  "description": "Translate Markdown unit-by-unit with an LLM: protected code/links/math, glossary, hard verify and mechanical-first repair.",
+  "author": { "name": "hiepnm93" },
+  "repository": "https://github.com/hiepnm93/md-translate",
+  "license": "MIT"
+}

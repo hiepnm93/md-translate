@@ -26,14 +26,15 @@ _LATE = [
 def protect(text: str, extra: list[str]) -> tuple[str, dict[str, str]]:
     mapping: dict[str, str] = {}
 
-    def ph(s: str) -> str:
+    def ph(s: str, raw: bool = False) -> str:
         key = f"P{len(mapping) + 1}"
-        mapping[key] = s
+        mapping[key] = s if raw else restore(s, mapping)  # expand nesting now; restore is one pass
         return f"⟦{key}⟧"
 
     def sub(rx: re.Pattern, t: str) -> str:
         return rx.sub(lambda m: ph(m.group(0)), t)
 
+    text = PH_RE.sub(lambda m: ph(m.group(0), raw=True), text)  # literal token-like text in the source
     for rx in _BLOCKS:
         text = sub(rx, text)
     for pat in extra:
@@ -48,7 +49,4 @@ def protect(text: str, extra: list[str]) -> tuple[str, dict[str, str]]:
 
 
 def restore(text: str, mapping: dict[str, str]) -> str:
-    prev = None
-    while prev != text:
-        prev, text = text, PH_RE.sub(lambda m: mapping.get(m.group(1), m.group(0)), text)
-    return text
+    return PH_RE.sub(lambda m: mapping.get(m.group(1), m.group(0)), text)
